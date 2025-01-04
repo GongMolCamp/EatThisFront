@@ -5,7 +5,7 @@
 @layer base {
   @font-face {
     font-family: "Pretendard";
-    src: url("/fonts/Pretendard-Regular.woff2") format("woff2");
+    src: url("/fonts/Pretendard-Regular.woff") format("woff");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -13,7 +13,7 @@
 
   @font-face {
     font-family: "Pretendard";
-    src: url("/fonts/Pretendard-Medium.woff2") format("woff2");
+    src: url("/fonts/Pretendard-Medium.woff") format("woff");
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -21,7 +21,7 @@
 
   @font-face {
     font-family: "Pretendard";
-    src: url("/fonts/Pretendard-Bold.woff2") format("woff2");
+    src: url("/fonts/Pretendard-Bold.woff") format("woff");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -29,7 +29,7 @@
 
   @font-face {
     font-family: "LogoTitle";
-    src: url("/fonts/logintitle.ttf") format("truetype");
+    src: url("/fonts/logintitle.woff") format("woff");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
