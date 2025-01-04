@@ -2,20 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  @font-face {
+    font-family: "Pretendard";
+    src: url("/fonts/Pretendard-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @font-face {
+    font-family: "Pretendard";
+    src: url("/fonts/Pretendard-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Pretendard";
+    src: url("/fonts/Pretendard-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "LogoTitle";
+    src: url("/fonts/logintitle.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
   }
 }
 
+:root {
+  --font-pretendard: "Pretendard", system-ui, sans-serif;
+  --font-logo: "LogoTitle", system-ui, sans-serif;
+}
+
+html {
+  font-family: var(--font-pretendard);
+}
+
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-white;
 }

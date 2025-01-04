@@ -1,101 +1,68 @@
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <main className="flex min-h-screen flex-col items-center bg-white">
+      <div className="w-full max-w-[640px] px-6 py-16 md:max-w-[768px]">
+        <div className="flex flex-col items-center justify-center gap-8">
+          {/* 로고 섹션 */}
+          <div className="relative w-[240px] h-[240px]">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="/images/logoBackground.png"
+              alt="로고 배경"
+              fill
+              priority
+              className="object-contain scale-125"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <Image
+              src="/images/mainLogo.png"
+              alt="메인 로고"
+              fill
+              priority
+              className="object-contain scale-125"
+            />
+            <div className="absolute bottom-2 left-2 w-[24px] h-[24px]">
+              <Image
+                src="/images/logoStar.png"
+                alt="로고 별"
+                fill
+                priority
+                className="object-contain"
+              />
+            </div>
+            <div className="absolute top-2 right-2 w-[24px] h-[24px]">
+              <Image
+                src="/images/logoStar.png"
+                alt="로고 별"
+                fill
+                priority
+                className="object-contain"
+              />
+            </div>
+          </div>
+
+          {/* 서비스명 */}
+          <h1 className="font-logo text-[92px] text-primary">이거무라</h1>
+
+          {/* 설명 텍스트 */}
+          <p className="text-title font-logo text-center text-gray-dark whitespace-pre-line leading-relaxed">
+            {`맛있는 선택, 이거무라가 도와줄게요.
+오늘의 메뉴, 고민은 이제 그만.
+이거무라와 함께라면 한 끼를 즐겁게!`}
+          </p>
+
+          {/* 버튼 그룹 */}
+          <div className="flex flex-col w-full gap-4 mt-4">
+            <Button variant="primary" size="lg" className="w-full">
+              로그인
+            </Button>
+            <Button variant="outline-primary" size="lg" className="w-full">
+              구글로 로그인
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }
