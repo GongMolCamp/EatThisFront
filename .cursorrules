@@ -1,0 +1,90 @@
+You are an expert in TypeScript, Node.js, Next.js App Router, React,TailWind.
+
+Key Principles
+- Write concise, technical TypeScript code with accurate examples.
+- Use functional and declarative programming patterns; avoid classes.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Structure files: exported component, subcomponents, helpers, static content, types.
+
+Naming Conventions
+- Use lowercase with dashes for directories (e.g., components/auth-wizard).
+- Favor named exports for components.
+
+TypeScript Usage
+- Use TypeScript for all code; prefer interfaces over types.
+- Avoid enums; use maps instead.
+- Use functional components with TypeScript interfaces.
+
+Syntax and Formatting
+- Use the "function" keyword for pure functions.
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+- Use declarative JSX.
+
+UI and Styling
+- Use Shadcn UI, Radix, and Tailwind for components and styling.
+- Implement responsive design with Tailwind CSS; use a mobile-first approach.
+
+Performance Optimization
+- Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
+- Wrap client components in Suspense with fallback.
+- Use dynamic loading for non-critical components.
+- Optimize images: use WebP format, include size data, implement lazy loading.
+
+Key Conventions
+- Use 'nuqs' for URL search parameter state management.
+- Optimize Web Vitals (LCP, CLS, FID).
+- Limit 'use client':
+- Favor server components and Next.js SSR.
+- Use only for Web API access in small components.
+- Avoid for data fetching or state management.
+
+Follow Next.js docs for Data Fetching, Rendering, and Routing.
+
+src/
+├── app/                      # Next.js App Router directory
+│   ├── (routes)/             # Routing groups by page
+│   │   ├── dashboard/        # Example route
+│   │   │   ├── page.tsx      # Main component
+│   │   │   ├── layout.tsx    # Layout component
+│   │   │   ├── components/   # Subcomponents specific to this route
+│   │   │   │   ├── chart.tsx
+│   │   │   │   └── filters.tsx
+│   │   │   ├── hooks/        # Hooks specific to this route
+│   │   │   │   └── use-dashboard-query.ts
+│   │   │   └── types/        # Type definitions specific to this route
+│   │   │       └── query-params.ts
+│   │   └── profile/
+│   │       ├── page.tsx
+│   │       ├── components/
+│   │       └── hooks/
+├── components/               # Reusable global components
+│   ├── button.tsx            # Example: Global button component
+│   ├── modal.tsx
+│   ├── navbar/
+│   │   └── navbar.tsx
+│   └── footer/
+│       └── footer.tsx
+├── hooks/                    # Global hooks
+│   ├── use-query.ts          # URL state management (based on nuqs)
+│   ├── use-theme.ts          # Theme state management
+│   └── use-toast.ts          # Global toast hook
+├── lib/                      # Utility functions and service logic
+│   ├── api.ts                # API call utilities
+│   ├── fetcher.ts            # Fetch function for SWR or React Query
+│   └── formatter.ts          # Data formatting functions
+├── styles/                   # Global Tailwind CSS styles
+│   ├── globals.css           # Global styles
+│   ├── themes.css            # Dark/Light theme styles
+│   └── components.css        # Component styles
+├── types/                    # Global type definitions
+│   ├── user.ts               # Example: User type definitions
+│   ├── api.ts                # API response type definitions
+│   └── common.ts             # Common type definitions
+├── utils/                    # Common utility functions
+│   ├── debounce.ts           # Debounce function
+│   ├── throttle.ts           # Throttle function
+│   └── uuid.ts               # UUID generator
+└── public/                   # Static files
+    ├── images/               # Image files
+    └── fonts/                # Web font files
