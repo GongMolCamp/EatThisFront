@@ -6,14 +6,35 @@ import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/use-auth-store";
 
 interface LoginForm {
   email: string;
   password: string;
 }
 
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: string;
+  profileImageUrl?: string;
+  allergies: string[];
+}
+
+interface LoginResponse {
+  result: string;
+  message: string;
+  data: {
+    accessToken: string;
+    tokenType: string;
+    user: User;
+  };
+}
+
 export default function LoginPage() {
   const router = useRouter();
+  const login = useAuthStore((state) => state.login);
   const [formData, setFormData] = useState<LoginForm>({
     email: "",
     password: "",
@@ -33,22 +54,36 @@ export default function LoginPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
           },
-          credentials: "include",
           body: JSON.stringify(formData),
         }
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      const data: LoginResponse = await response.json();
+      console.log(data);
+      if (!response.ok || data.result !== "SUCCESS") {
         throw new Error(data.message || "로그인에 실패했습니다.");
       }
 
-      // 로그인 성공 시 메인 페이지로 이동
-      router.push("/");
-      router.refresh(); // 전역 상태 갱신을 위한 새로고침
+      if (!data.data.accessToken) {
+        throw new Error("토큰이 없습니다.");
+      }
+
+      // 서버에서 받은 유저 정보와 토큰으로 로그인
+      login(
+        {
+          id: String(data.data.user.id), // store의 User 인터페이스는 id가 string이므로 변환
+          email: data.data.user.email,
+          name: data.data.user.name,
+          profileImage: data.data.user.profileImageUrl,
+        },
+        data.data.accessToken
+      );
+
+      // replace: true를 추가하여 히스토리 스택에 쌓이지 않도록 함
+      router.replace("/main");
+      // 또는
+      window.location.href = "/main"; // 강제로 페이지 새로고침
     } catch (error) {
       console.error("Login error:", error);
       setError(

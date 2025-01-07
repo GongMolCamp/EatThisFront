@@ -7,6 +7,18 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { Camera } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+// 클라이언트와 서버의 알레르기 매핑
+const ALLERGY_MAP = {
+  우유: "MILK",
+  계란: "EGG",
+  갑각류: "CRUSTACEAN",
+  대두: "SOYBEAN",
+  밀: "WHEAT",
+  견과류: "NUTS",
+  조개류: "SHELLFISH",
+  생선: "FISH",
+} as const;
+
 const ALLERGIES = [
   { id: "우유", label: "우유" },
   { id: "계란", label: "계란" },
@@ -180,15 +192,20 @@ export default function SignupPage() {
       formDataToSend.append("password", formData.password);
       formDataToSend.append("name", formData.nickname);
 
-      // 프로필 이미지가 있는 경우에만 추가
       if (formData.profileImage) {
         formDataToSend.append("profileImage", formData.profileImage);
       }
 
-      // 알레르기 정보를 쉼표로 구분된 문자열로 변환하여 추가
-      if (selectedAllergies.length > 0) {
-        formDataToSend.append("allergies", selectedAllergies.join(","));
+      // 선택된 알레르기를 서버 형식으로 변환하여 추가
+      const serverAllergies = selectedAllergies.map(
+        (allergy) => ALLERGY_MAP[allergy as keyof typeof ALLERGY_MAP]
+      );
+
+      if (serverAllergies.length > 0) {
+        formDataToSend.append("allergies", serverAllergies.join(","));
       }
+
+      console.log("Server allergies:", serverAllergies); // 디버깅용
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
