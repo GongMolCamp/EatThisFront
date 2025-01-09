@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
+import { useScrollStore } from "@/store/use-scroll-store";
 
 // 뒤로가기가 필요한 경로들
 const BACK_ROUTES = ["/signup", "/login"];
@@ -10,6 +11,7 @@ const BACK_ROUTES = ["/signup", "/login"];
 export function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
+  const isVisible = useScrollStore((state) => state.isVisible);
 
   // 현재 경로가 뒤로가기가 필요한 경로인지 확인
   const needsBackButton = BACK_ROUTES.some((route) => {
@@ -20,7 +22,13 @@ export function NavBar() {
   });
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-white  z-50">
+    <nav
+      className={`
+        fixed top-0 left-0 right-0 h-16 bg-white z-50
+        transition-transform duration-300 ease-in-out
+        ${isVisible ? "translate-y-0" : "-translate-y-full"}
+      `}
+    >
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
         <div className="w-10">
           {needsBackButton && (
