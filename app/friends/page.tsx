@@ -1,30 +1,78 @@
 // app/social/page.tsx
 'use client';
 
-import {useState} from 'react';
+import {useState , useEffect} from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import {useAuthStore} from "@/store/use-auth-store";
 
 
 
 interface Friend {
     id: number;
     name: string;
-    allergy: string;
+    allergies: string[];
+    profileImageUrl: string | null;
 }
 
-const dummyFriends: Friend[] = [
-    { id: 1, name: '친구1', allergy: '갑각류' },
-    { id: 2, name: '친구1', allergy: '갑각류' },
-    { id: 3, name: '친구1', allergy: '갑각류' },
-    { id: 4, name: '친구1', allergy: '갑각류' },
-    { id: 5, name: '친구1', allergy: '갑각류' },
-    {id:6, name: '신태일', allergy:'해산물'},
-];
+const allergyTranslation: { [key: string]: string } = {
+    CRUSTACEAN: "갑각류",
+    FISH: "생선",
+    SHELLFISH: "조개류",
+    EGG: "계란",
+    MILK: "우유",
+    SOYBEAN: "대두(콩)",
+    WHEAT: "밀",
+    NUTS: "견과류"
+};
+
+const translateAllergy = (allergies: string[]): string => {
+    if (!allergies || allergies.length === 0) {
+        return "없음"; // 알러지가 없는 경우 기본값
+    }
+    return allergies
+        .map((allergy) => allergyTranslation[allergy] || allergy) // 한글로 변환
+        .join(", "); // 쉼표로 구분된 문자열로 변환
+};
+
 
 export default function SocialPage() {
-
+    const token = useAuthStore((state)=> state.token);
+    const { user } = useAuth();
+    const [friends, setFriends] = useState<Friend[]>([]);
     const [selectedFriendIds, setSelectedFriendIds] = useState<number[]>([]);
+
+    useEffect(() => {
+        const fetchFriends = async () => {
+            if (!user) {
+                console.error('로그인된 사용자 정보가 없습니다.');
+                return;
+            }
+
+            try {
+                // API 호출: 로그인된 사용자 ID 사용
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/friends/list?userId=${user.id}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`, // 토큰 가져오기
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('친구 목록을 가져오는 데 실패했습니다.');
+                }
+
+                const data = await response.json(); // JSON 데이터 파싱
+                setFriends(data);
+            } catch (error) {
+                console.error('친구 목록을 가져오는 중 오류 발생:', error);
+            }
+        };
+        fetchFriends();
+    }, [user]);
+
 
     const handleFriendClick = (id: number) => {
         setSelectedFriendIds((prevSelected) => {
@@ -38,6 +86,16 @@ export default function SocialPage() {
         });
     };
 
+
+
+    if (!user) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
     return (
         <main className="flex min-h-screen flex-col items-center bg-white">
             <div className="w-full max-w-[640px] px-6 py-16">
@@ -50,9 +108,8 @@ export default function SocialPage() {
                     </div>
                     {/* 친구 목록 */}
                     <div className="w-full space-y-6">
-                        {dummyFriends.map(friend => {
+                        {friends.map(friend => {
                             const isSelected = selectedFriendIds.includes(friend.id);
-
                             const borderColorClass = isSelected ? 'border-[#4A90E2]' : 'border-[#FFA726]';
 
                             return (
@@ -65,9 +122,9 @@ export default function SocialPage() {
                                     <div className="w-12 h-12 bg-gray-300 rounded-full mr-4 flex-shrink-0"/>
 
                                     {/* 이름 / 알레르기 */}
-                                    <div>
+                                    <div className="text-left">
                                         <div>이름 : {friend.name}</div>
-                                        <div>알러지 : {friend.allergy}</div>
+                                        <div>알러지 : {translateAllergy(friend.allergies)}</div>
                                     </div>
                                 </button>
                             );
