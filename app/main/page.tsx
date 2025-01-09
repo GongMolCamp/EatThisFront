@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { useScrollStore } from "@/store/use-scroll-store";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/api";
 
 export default function MainPage() {
   const { user } = useAuth();
@@ -35,6 +36,23 @@ export default function MainPage() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [setIsVisible]); // lastScrollY를 의존성 배열에서 제거
+
+  const handleSoloEat = async () => {
+    try {
+      const response = await fetchWithAuth("/api/ai/generate", {
+        method: "POST",
+        body: JSON.stringify({
+          members: [{ id: user?.id }],
+        }),
+      });
+
+      console.log("AI 응답:", response);
+      // TODO: 응답 처리 (예: 추천 결과 페이지로 이동)
+    } catch (error) {
+      console.error("AI 추천 에러:", error);
+      // TODO: 에러 처리
+    }
+  };
 
   if (!user) {
     return (
@@ -97,6 +115,7 @@ export default function MainPage() {
               variant="primary"
               size="lg"
               className="w-full max-w-xs transform group-hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+              onClick={handleSoloEat}
             >
               시작하기
             </Button>
