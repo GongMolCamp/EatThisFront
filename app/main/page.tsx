@@ -42,15 +42,15 @@ export default function MainPage() {
       const response = await fetchWithAuth("/api/ai/generate", {
         method: "POST",
         body: JSON.stringify({
-          members: [{ id: user?.id }],
+          members: [user?.id],
         }),
       });
 
-      console.log("AI 응답:", response);
-      // TODO: 응답 처리 (예: 추천 결과 페이지로 이동)
+      // AI 응답에서 text 부분만 추출해서 출력
+      const recommendedFood = response.candidates[0].content.parts[0].text;
+      console.log("AI 추천 메뉴:", recommendedFood);
     } catch (error) {
       console.error("AI 추천 에러:", error);
-      // TODO: 에러 처리
     }
   };
 
