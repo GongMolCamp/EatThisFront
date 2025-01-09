@@ -16,9 +16,9 @@ export default function Home() {
                 로그인
               </Button>
             </Link>
-            <Button variant="outline-primary" size="lg" className="w-full">
+            {/* <Button variant="outline-primary" size="lg" className="w-full">
               구글로 로그인
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
