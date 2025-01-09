@@ -45,10 +45,12 @@ export default function MainPage() {
           members: [user?.id],
         }),
       });
-
       // AI 응답에서 text 부분만 추출해서 출력
-      const recommendedFood = response.candidates[0].content.parts[0].text;
-      console.log("AI 추천 메뉴:", recommendedFood);
+      const recommendedFood = response.placeId;
+      console.log("AI 추천 식당ID: ", recommendedFood);
+
+      router.push(`/result?food=${btoa(recommendedFood)}`);
+
     } catch (error) {
       console.error("AI 추천 에러:", error);
     }
