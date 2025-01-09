@@ -4,8 +4,8 @@
 import {useState} from 'react';
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
-
-
+import { fetchWithAuth } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 interface Friend {
     id: number;
@@ -23,7 +23,7 @@ const dummyFriends: Friend[] = [
 ];
 
 export default function SocialPage() {
-
+    const router = useRouter();
     const [selectedFriendIds, setSelectedFriendIds] = useState<number[]>([]);
 
     const handleFriendClick = (id: number) => {
@@ -37,7 +37,24 @@ export default function SocialPage() {
             }
         });
     };
-
+    const Recommendation = async () => {
+        try {
+          const response = await fetchWithAuth("/api/ai/generate", {
+            method: "POST",
+            body: JSON.stringify({
+              members: [...selectedFriendIds]
+            }),
+          });
+          // AI 응답에서 text 부분만 추출해서 출력
+          const recommendedFood = response.placeId;
+          console.log("AI 추천 식당ID: ", recommendedFood);
+    
+          router.push(`/result?food=${btoa(recommendedFood)}`);
+          
+        } catch (error) {
+          console.error("AI 추천 에러:", error);
+        }
+      };
     return (
         <main className="flex min-h-screen flex-col items-center bg-white">
             <div className="w-full max-w-[640px] px-6 py-16">
@@ -81,8 +98,8 @@ export default function SocialPage() {
                                 친구찾기
                             </Button>
                         </Link>
-                        <Button variant = "outline-primary" size="lg" className={ "w-full"}>
-                            파티추가
+                        <Button variant = "outline-primary" size="lg" className={ "w-full"} onClick={() => Recommendation()}>
+                            추천받기
                         </Button>
                     </div>
                 </div>
