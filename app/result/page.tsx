@@ -1,28 +1,29 @@
 "use client";
 
-import Image from "next/image";
 import { Logo } from "@/components/logo";
-import {useSearchParams} from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { fetchWithAuth } from "@/lib/api";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { MapPin, Navigation, History } from "lucide-react";
+import { useScrollStore } from "@/store/use-scroll-store";
 
 interface Restaurant {
-    id: number;
-    name: string;
-    menu: string;
-    map_url: string;
-    image_url: string;
+  id: number;
+  name: string;
+  menu: string;
+  map_url: string;
+  image_url: string;
 }
 
-
-export default function Home() {
+export default function ResultPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const encodedPlace = searchParams.get("food");
   const placeId = encodedPlace ? atob(encodedPlace) : "추천 메뉴 없음";
-  console.log(placeId);
-
-  const [restaurantData, setRestaurantData] = useState<Restaurant | null>(null); // 백엔드에서 가져온 데이터
-  const [isLoading, setIsLoading] = useState(true);
+  const [restaurantData, setRestaurantData] = useState<Restaurant | null>(null);
+  const setIsVisible = useScrollStore((state) => state.setIsVisible);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,56 +32,115 @@ export default function Home() {
           const response = await fetchWithAuth(`/restaurants/${placeId}`, {
             method: "GET",
           });
-          // 가져온 데이터를 상태에 저장
           setRestaurantData(response);
-          console.log(response);
         } catch (error) {
-          console.error("AI 추천 에러:", error);
+          console.error("데이터 로딩 에러:", error);
         }
       }
     };
-    fetchData(); // 비동기 함수 호출
+    fetchData();
   }, [placeId]);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, [setIsVisible]);
+
+  const handleBackToMain = () => {
+    setIsVisible(true);
+    router.push("/main");
+  };
 
   if (!restaurantData) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <span className="text-gray-600">데이터를 가져올 수 없습니다.</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center text-center font-sans">
-      {/* 상단 아이스크림 이미지 */}
-      <div className="mt-4">
-        <Logo width={190} height={190}></Logo>
-      </div>
-      
+    <div className="min-h-screen bg-gradient-to-b from-white to-orange-50/30 py-8">
+      <div className="container mx-auto px-4">
+        <div className="max-w-md mx-auto space-y-6">
+          <div className="flex flex-col items-center mb-6">
+            <Logo width={80} height={80} />
+            <h1 className="text-2xl font-bold text-gray-800 mt-4">
+              오늘의 추천 맛집
+            </h1>
+            <p className="text-sm text-gray-500">
+              AI가 당신을 위해 선택했어요!
+            </p>
+          </div>
 
-      {/* 제목 */}
-      <h1 className="mt-4 font-logo text-[70px] text-primary">{restaurantData.name}</h1>
+          <div className="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
+            <div className="relative h-72 w-full">
+              <img
+                src={
+                  restaurantData.image_url ||
+                  "https://via.placeholder.com/800x600"
+                }
+                alt={restaurantData.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <p className="text-white/80 text-sm mb-1">추천 메뉴</p>
+                <h2 className="text-2xl font-bold text-white mb-1">
+                  {restaurantData.name}
+                </h2>
+                <p className="text-white/90 font-medium">
+                  {restaurantData.menu}
+                </p>
+              </div>
+            </div>
 
-      {/* 이미지가 들어갈 네모 */}
-      <div className="w-72 h-72 border border-gray-300 rounded-lg overflow-hidden">
-        <img
-            src={restaurantData.image_url || "https://via.placeholder.com/300"} // 데이터베이스에서 가져온 URL
-            alt={restaurantData.name}
-            className="w-full h-full object-cover"
-        />
-    </div>
+            <div className="p-5 space-y-3">
+              <a
+                href={restaurantData.map_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full gap-2 shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <Navigation className="w-4 h-4" />
+                  길찾기
+                </Button>
+              </a>
 
-      {/* 하단 링크 */}
-      <div className="mt-4">
-        <a
-            href={restaurantData.map_url || "#"} // 원하는 URL
-            className="font-logo text-[43px] text-primary"
-            target="_blank" // 새 창에서 열기
-            rel="noopener noreferrer" // 보안 설정
-        >
-            {restaurantData.menu|| "실패"}
-        </a>
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full gap-2 hover:bg-gray-50 transition-colors"
+                onClick={handleBackToMain}
+              >
+                <MapPin className="w-4 h-4" />
+                다시 추천받기
+              </Button>
+            </div>
+          </div>
+
+          <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-gray-100">
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full gap-2 hover:bg-white/80 transition-all text-gray-600 group"
+              onClick={() => {
+                setIsVisible(true);
+                router.push("/visits");
+              }}
+            >
+              <History className="w-4 h-4 group-hover:text-primary transition-colors" />
+              <span className="group-hover:text-primary transition-colors">
+                방문 기록 보기
+              </span>
+            </Button>
+          </div>
         </div>
+      </div>
     </div>
   );
 }

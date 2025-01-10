@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useScrollStore } from "@/store/use-scroll-store";
 
 // 뒤로가기가 필요한 경로들
-const BACK_ROUTES = ["/signup", "/login"];
+const BACK_ROUTES = ["/signup", "/login", "/result", "/friends", "/visits"];
 
 export function NavBar() {
   const pathname = usePathname();
@@ -33,7 +33,7 @@ export function NavBar() {
         <div className="w-10">
           {needsBackButton && (
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push("/main")}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-6 h-6" />

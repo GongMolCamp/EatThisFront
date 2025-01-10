@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useScrollStore } from "@/store/use-scroll-store";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/api";
+import { History } from "lucide-react";
 
 export default function MainPage() {
   const { user } = useAuth();
@@ -50,7 +51,6 @@ export default function MainPage() {
       console.log("AI 추천 식당ID: ", recommendedFood);
 
       router.push(`/result?food=${btoa(recommendedFood)}`);
-
     } catch (error) {
       console.error("AI 추천 에러:", error);
     }
@@ -75,21 +75,39 @@ export default function MainPage() {
         `}
       >
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-2xl shadow-md p-8 border border-gray-100">
-            <div className="flex items-center gap-6">
-              <div className="relative w-24 h-24">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-primary">
-                    {user.name[0]}
-                  </span>
+          <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+            <div className="flex flex-col">
+              {/* 프로필 정보 */}
+              <div className="flex items-center gap-4">
+                <div className="relative w-16 h-16">
+                  <div className="w-full h-full rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                    <span className="text-xl font-bold text-primary">
+                      {user.name[0]}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold mb-0.5 text-gray-800">
+                    {user.name}
+                  </h1>
+                  <p className="text-sm text-gray-500">{user.email}</p>
                 </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold mb-1 text-gray-800">
-                  {user.name}
-                </h1>
-                <p className="text-gray-500">{user.email}</p>
-              </div>
+
+              {/* 구분선 */}
+              <div className="border-t border-gray-100 my-3" />
+
+              {/* 방문 기록 버튼 */}
+              <button
+                onClick={() => {
+                  setIsVisible(true);
+                  router.push("/visits");
+                }}
+                className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors group w-full justify-center text-sm"
+              >
+                <History className="w-4 h-4" />
+                <span className="font-medium">방문 기록 보기</span>
+              </button>
             </div>
           </div>
         </div>

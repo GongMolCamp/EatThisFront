@@ -8,6 +8,7 @@ import { fetchWithAuth } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useAuthStore } from "@/store/use-auth-store";
+import { useScrollStore } from "@/store/use-scroll-store";
 
 interface Friend {
   id: number;
@@ -40,8 +41,13 @@ export default function SocialPage() {
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
   const { user } = useAuth();
+  const setIsVisible = useScrollStore((state) => state.setIsVisible);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [selectedFriendIds, setSelectedFriendIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, [setIsVisible]);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -88,13 +94,13 @@ export default function SocialPage() {
   };
   const Recommendation = async () => {
     try {
+      setIsVisible(true);
       const response = await fetchWithAuth("/api/ai/generate", {
         method: "POST",
         body: JSON.stringify({
           members: [...selectedFriendIds],
         }),
       });
-      // AI 응답에서 text 부분만 추출해서 출력
       const recommendedFood = response.placeId;
       console.log("AI 추천 식당ID: ", recommendedFood);
 
