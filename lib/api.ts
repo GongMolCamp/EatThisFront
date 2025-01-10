@@ -29,10 +29,7 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
 export const api = {
   // 리뷰 관련
   reviews: {
-    list: (params?: { userId?: string }) =>
-      fetchWithAuth(
-        `/api/reviews${params?.userId ? `?userId=${params.userId}` : ""}`
-      ),
+    list: (params?: { userId?: string }) => fetchWithAuth(`/api/reviews${params?.userId ? `?userId=${params.userId}` : ""}`),
     get: (id: string) => fetchWithAuth(`/api/reviews/${id}`),
     create: (data: FormData) =>
       fetchWithAuth("/api/reviews", {
@@ -58,5 +55,19 @@ export const api = {
         method: "PUT",
         body: data,
       }),
+  },
+
+  // 방문 기록 관련
+  visits: {
+    list: () => fetchWithAuth("/api/visits"),
+    updateStatus: async (placeId: string | number, body: { visitStatus: string }) => {
+      console.log("API Call to:", `/api/visits/${placeId}`); // ✅ 추가
+      console.log("Request Body:", body); // ✅ 추가
+
+      return fetchWithAuth(`/api/visits/${placeId}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+      });
+    },
   },
 };
