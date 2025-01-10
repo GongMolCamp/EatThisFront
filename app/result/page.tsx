@@ -112,7 +112,7 @@ export default function ResultPage() {
               </a>
 
               <Button
-                variant="outline"
+                variant="outline-primary"
                 size="lg"
                 className="w-full gap-2 hover:bg-gray-50 transition-colors"
                 onClick={handleBackToMain}
@@ -125,7 +125,7 @@ export default function ResultPage() {
 
           <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-gray-100">
             <Button
-              variant="ghost"
+              variant="outline-primary"
               size="lg"
               className="w-full gap-2 hover:bg-white/80 transition-all text-gray-600 group"
               onClick={() => {
