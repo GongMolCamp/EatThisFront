@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useScrollStore } from "@/store/use-scroll-store";
 
 // 뒤로가기가 필요한 경로들
-const BACK_ROUTES = ["/signup", "/login"];
+const BACK_ROUTES = ["/signup", "/login", "/friends", "/find"];
 
 export function NavBar() {
   const pathname = usePathname();

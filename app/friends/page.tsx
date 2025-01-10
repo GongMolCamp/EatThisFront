@@ -1,4 +1,3 @@
-// app/social/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,11 +28,11 @@ const allergyTranslation: { [key: string]: string } = {
 
 const translateAllergy = (allergies: string[]): string => {
   if (!allergies || allergies.length === 0) {
-    return "없음"; // 알러지가 없는 경우 기본값
+    return "없음";
   }
   return allergies
-    .map((allergy) => allergyTranslation[allergy] || allergy) // 한글로 변환
-    .join(", "); // 쉼표로 구분된 문자열로 변환
+      .map((allergy) => allergyTranslation[allergy] || allergy)
+      .join(", ");
 };
 
 export default function SocialPage() {
@@ -51,22 +50,21 @@ export default function SocialPage() {
       }
 
       try {
-        // API 호출: 로그인된 사용자 ID 사용
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/friends/list?userId=${user.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // 토큰 가져오기
-            },
-          }
+            `${process.env.NEXT_PUBLIC_API_URL}/api/friends/list?userId=${user.id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
         );
         if (!response.ok) {
           throw new Error("친구 목록을 가져오는 데 실패했습니다.");
         }
 
-        const data = await response.json(); // JSON 데이터 파싱
+        const data = await response.json();
         setFriends(data);
       } catch (error) {
         console.error("친구 목록을 가져오는 중 오류 발생:", error);
@@ -78,14 +76,15 @@ export default function SocialPage() {
   const handleFriendClick = (id: number) => {
     setSelectedFriendIds((prevSelected) => {
       if (prevSelected.includes(id)) {
-        // 이미 선택된 친구라면 -> 선택 해제 (배열에서 제거)
+        // 이미 선택된 친구라면 -> 선택 해제
         return prevSelected.filter((friendId) => friendId !== id);
       } else {
-        // 아직 선택되지 않은 친구라면 -> 선택 (배열에 추가)
+        // 선택되지 않은 친구라면 -> 선택
         return [...prevSelected, id];
       }
     });
   };
+
   const Recommendation = async () => {
     try {
       const response = await fetchWithAuth("/api/ai/generate", {
@@ -94,7 +93,6 @@ export default function SocialPage() {
           members: [...selectedFriendIds],
         }),
       });
-      // AI 응답에서 text 부분만 추출해서 출력
       const recommendedFood = response.placeId;
       console.log("AI 추천 식당ID: ", recommendedFood);
 
@@ -106,67 +104,66 @@ export default function SocialPage() {
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-      </div>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        </div>
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-white">
-      <div className="w-full max-w-[640px] px-6 py-16">
-        <div className="flex flex-col items-start w-full">
-          {/* 상단 제목 */}
-          <div className="mb-8">
-            <h1 className="text-title text-gray-dark">소셜</h1>
-            {/* 친구목록 제목 */}
-            <p className="text-subtitle text-gray-default mt-7">친구목록</p>
-          </div>
-          {/* 친구 목록 */}
-          <div className="w-full space-y-6">
-            {friends.map((friend) => {
-              const isSelected = selectedFriendIds.includes(friend.id);
-              const borderColorClass = isSelected
+  <main className="flex flex-col items-center w-full h-screen bg-white">
+    <div className="flex flex-col w-full max-w-[640px] h-full">
+      <div className="sticky top-0 shadow-md bg-white z-10 px-6 pt-8 pb-4">
+        <h1 className="text-title text-gray-dark">소셜</h1>
+        <p className="text-subtitle text-gray-default mt-7">친구목록</p>
+      </div>
+
+
+      <div className="flex-1 overflow-y-auto px-6 pb-4">
+        <div className="w-full space-y-6 mt-6">
+          {friends.map((friend) => {
+            const isSelected = selectedFriendIds.includes(friend.id);
+            const borderColorClass = isSelected
                 ? "border-[#4A90E2]"
                 : "border-[#FFA726]";
 
-              return (
+            return (
                 <button
-                  key={friend.id}
-                  onClick={() => handleFriendClick(friend.id)}
-                  className={`w-full flex items-center p-3 rounded-2xl border-2  text-sm text-gray-dark hover:border-[#F57C00] ${borderColorClass}`}
+                    key={friend.id}
+                    onClick={() => handleFriendClick(friend.id)}
+                    className={`w-full flex items-center p-3 rounded-2xl border-2 shadow-md text-sm text-gray-dark hover:border-[#F57C00] ${borderColorClass}`}
                 >
-                  {/* 프로필 이미지(원형) 자리 */}
                   <div className="w-12 h-12 bg-gray-300 rounded-full mr-4 flex-shrink-0" />
-
-                  {/* 이름 / 알레르기 */}
                   <div className="text-left">
                     <div>이름 : {friend.name}</div>
                     <div>알러지 : {translateAllergy(friend.allergies)}</div>
                   </div>
                 </button>
-              );
-            })}
-          </div>
-
-          {/* 버튼 영역 */}
-          <div className="flex flex-col w-full gap-4 mt-8">
-            <Link href="/find" className={"w-full"}>
-              <Button variant="primary" size="lg" className={"w-full"}>
-                친구찾기
-              </Button>
-            </Link>
-            <Button
-              variant="outline-primary"
-              size="lg"
-              className={"w-full"}
-              onClick={() => Recommendation()}
-            >
-              추천받기
-            </Button>
-          </div>
+            );
+          })}
         </div>
       </div>
-    </main>
-  );
+
+      {/*
+          하단 버튼 영역
+          (모바일 기준에서 항상 아래쪽에 위치)
+        */}
+      <div className="flex flex-col gap-4 px-6 pb-8">
+        <Link href="/find" className="w-full">
+          <Button variant="primary" size="lg" className="w-full">
+            친구찾기
+          </Button>
+        </Link>
+        <Button
+            variant="outline-primary"
+            size="lg"
+            className="w-full"
+            onClick={Recommendation}
+        >
+          추천받기
+        </Button>
+      </div>
+    </div>
+  </main>
+);
 }
