@@ -4,11 +4,18 @@ import { useState } from 'react';
 import { useAuth } from "@/hooks/use-auth";
 import { useAuthStore} from "@/store/use-auth-store";
 
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    profileImageUrl?: string;
+}
+
 export default function FindPage() {
     const token = useAuthStore((state)=> state.token);
     const { user } = useAuth();
     const [searchEmail, setSearchEmail] = useState('');
-    const [searchResult, setSearchResult] = useState(null);
+    const [searchResult, setSearchResult] = useState<User | null>(null);
     const [error, setError] = useState('');
 
     const handleSearch = async () => {
@@ -26,7 +33,6 @@ export default function FindPage() {
                     },
                 }
             );
-
             if (!response.ok) {
                 throw new Error('사용자를 찾을 수 없습니다.');
             }
@@ -37,6 +43,37 @@ export default function FindPage() {
             console.error("error!", err); // 에러 메시지 설정
         }
     };
+    const handleAddFriend = async (friendId: number, userId: number) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/friends/request`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ friendId, userId }),
+            });
+
+            if (!response.ok) {
+                alert(user?.id);
+                throw new Error("친구 요청에 실패했습니다.");
+            }
+
+            alert("친구 요청이 전송되었습니다!");
+        } catch (error) {
+            console.error(error);
+            alert("친구 요청 중 문제가 발생했습니다.");
+        }
+    };
+
+    if (!user) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
 
     return (
         <main className="flex min-h-screen flex-col items-center bg-white">
@@ -70,11 +107,16 @@ export default function FindPage() {
                 {searchResult && (
                     <div className="mt-6 w-full p-4 bg-gray-100 rounded-lg shadow">
                         <div className="flex items-center">
-
                             <div>
-                                <p className="text-lg font-medium">{user?.name}</p>
-                                <p className="text-sm text-gray-600">{user?.email}</p>
+                                <p className="text-lg font-medium">{searchResult.name}</p>
+                                <p className="text-sm text-gray-600">{searchResult.email}</p>
                             </div>
+                            <button
+                                onClick={() => handleAddFriend(searchResult?.id, parseInt(user?.id))}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            >
+                                친구 추가
+                            </button>
                         </div>
                     </div>
                 )}
