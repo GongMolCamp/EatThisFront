@@ -4,7 +4,12 @@ import { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline-primary" | "outline-secondary";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline-primary"
+    | "outline-secondary"
+    | "outline";
   size?: "sm" | "md" | "lg";
 }
 
