@@ -1,215 +1,153 @@
-"use client";
+"use client"; // 클라이언트 컴포넌트로 선언
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { fetchWithAuth } from "@/lib/api";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
-import { useAuthStore } from "@/store/use-auth-store";
-import { useScrollStore } from "@/store/use-scroll-store";
+import { api } from "@/lib/api";
+import { NavBar } from "@/components/nav-bar";
 
-interface Friend {
-  id: number;
-  name: string;
-  allergies: string[];
-  profileImageUrl: string | null;
+interface Visit {
+  id: string;
+  restaurantId: string;
+  restaurantName: string;
+  visitStatus: "NOT_VISITED" | "LIKE" | "DISLIKE";
+  createdAt: string;
+  mapUrl: string;
+  imageUrl: string;
 }
 
-const allergyTranslation: { [key: string]: string } = {
-  CRUSTACEAN: "갑각류",
-  FISH: "생선",
-  SHELLFISH: "조개류",
-  EGG: "계란",
-  MILK: "우유",
-  SOYBEAN: "대두(콩)",
-  WHEAT: "밀",
-  NUTS: "견과류",
-};
-
-const translateAllergy = (allergies: string[]): string => {
-  if (!allergies || allergies.length === 0) {
-    return "없음";
-  }
-  return allergies
-    .map((allergy) => allergyTranslation[allergy] || allergy)
-    .join(", ");
-};
-
-export default function SocialPage() {
-  const router = useRouter();
-  const token = useAuthStore((state) => state.token);
-  const { user } = useAuth();
-  const setIsVisible = useScrollStore((state) => state.setIsVisible);
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [selectedFriendIds, setSelectedFriendIds] = useState<number[]>([]);
+export default function VisitsPage() {
+  const [visits, setVisits] = useState<Visit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsVisible(true);
-  }, [setIsVisible]);
-
-  useEffect(() => {
-    const fetchFriends = async () => {
-      if (!user) {
-        console.error("로그인된 사용자 정보가 없습니다.");
-        return;
-      }
-
+    const fetchVisits = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/friends/list?userId=${user.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error("친구 목록을 가져오는 데 실패했습니다.");
-        }
-
-        const data = await response.json();
-        setFriends(data);
-      } catch (error) {
-        console.error("친구 목록을 가져오는 중 오류 발생:", error);
+        const data = await api.visits.list();
+        setVisits(data);
+        setLoading(false);
+      } catch {
+        setError("방문 기록을 불러오는 중 오류가 발생했습니다.");
+        setLoading(false);
       }
     };
-    fetchFriends();
-  }, [user, token]);
 
-  const handleFriendClick = (id: number) => {
-    setSelectedFriendIds((prevSelected) => {
-      if (prevSelected.includes(id)) {
-        // 이미 선택된 친구라면 -> 선택 해제
-        return prevSelected.filter((friendId) => friendId !== id);
-      } else {
-        // 선택되지 않은 친구라면 -> 선택
-        return [...prevSelected, id];
-      }
-    });
-  };
+    fetchVisits();
+  }, []);
 
-  const Recommendation = async () => {
+  if (loading) return <div>로딩 중...</div>;
+
+  if (error) return <div>{error}</div>;
+
+  return (
+    <>
+      <NavBar />
+
+      <main className="flex flex-col items-start bg-white p-4">
+        <h1 className="text-title font-sans text-grey-dark">방문 기록</h1>
+        <div className="w-full max-w-xl">
+          {visits.map((visit) => (
+            <VisitItem key={visit.id} visit={visit} />
+          ))}
+        </div>
+      </main>
+    </>
+  );
+}
+
+function VisitItem({ visit }: { visit: Visit }) {
+  const [editing, setEditing] = useState(false);
+  const [status, setStatus] = useState(visit.visitStatus);
+
+  const handleUpdateStatus = async (
+    newStatus: "NOT_VISITED" | "LIKE" | "DISLIKE"
+  ) => {
     try {
-      setIsVisible(true);
-      const response = await fetchWithAuth("/api/ai/generate", {
-        method: "POST",
-        body: JSON.stringify({
-          members: [...selectedFriendIds],
-        }),
+      await api.visits.updateStatus(visit.restaurantId, {
+        visitStatus: newStatus,
       });
-      const recommendedFood = response.placeId;
-      console.log("AI 추천 식당ID: ", recommendedFood);
-
-      router.push(`/result?food=${btoa(recommendedFood)}`);
+      setStatus(newStatus);
+      setEditing(false);
     } catch (error) {
-      console.error("AI 추천 에러:", error);
+      console.error("Failed to update status:", error);
     }
   };
 
-  if (!user) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
-    <main className="flex flex-col items-center w-full h-screen bg-gradient-to-b from-white to-orange-50/30">
-      <div className="flex flex-col w-full max-w-[640px] h-full">
-        <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-6 pt-8 pb-4">
-          <h1 className="text-2xl font-bold text-gray-800">소셜</h1>
-          <div className="flex items-center justify-between mt-6">
-            <p className="text-lg font-medium text-gray-600">친구목록</p>
-            <p className="text-sm text-gray-500">
-              {selectedFriendIds.length}명 선택됨
-            </p>
-          </div>
+    <div className="flex items-center w-full h-32 border-b border-gray DEFAULT">
+      {/* Restaurant Image */}
+      {visit.imageUrl ? (
+        <img
+          src={visit.imageUrl}
+          alt={visit.restaurantName}
+          className="w-20 h-20 rounded-lg object-cover border border-secondary-light"
+        />
+      ) : (
+        <div className="w-20 h-20 rounded-lg bg-gray-lightest flex items-center justify-center text-gray text-caption border border-secondary-light">
+          사진 없음
         </div>
+      )}
 
-        <div className="flex-1 overflow-y-auto px-6 pb-4">
-          <div className="w-full space-y-4 mt-4">
-            {friends.map((friend) => {
-              const isSelected = selectedFriendIds.includes(friend.id);
-              return (
-                <button
-                  key={friend.id}
-                  onClick={() => handleFriendClick(friend.id)}
-                  className={`
-                  w-full flex items-center p-4 rounded-2xl border-2
-                  ${
-                    isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-gray-100 hover:border-primary/30"
-                  }
-                  transition-all duration-200 group
-                `}
-                >
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div
-                    className={`
-                  w-12 h-12 rounded-full mr-4 flex-shrink-0
-                  bg-gradient-to-br from-primary/20 to-primary/5
-                  flex items-center justify-center
-                  ${isSelected ? "text-primary" : "text-gray-400"}
-                  <div
-                    className={`
-                  w-12 h-12 rounded-full mr-4 flex-shrink-0
-                  bg-gradient-to-br from-primary/20 to-primary/5
-                  flex items-center justify-center
-                  ${isSelected ? "text-primary" : "text-gray-400"}
-                `}
-                  >
-                    <span className="text-lg font-medium">
-                      {friend.name[0]}
-                    </span>
-                  </div>
+      {/* Restaurant Info */}
+      <div className="ml-4 flex flex-col justify-between h-20">
+        <a
+          href={visit.mapUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-title font-medium text-gray-dark hover:underline"
+        >
+          {visit.restaurantName}
+        </a>
+        <p className="text-caption text-gray DEFAULT">
+          {new Date(visit.createdAt).toLocaleString()}
+        </p>
 
-                  <div className="text-left flex-1">
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={`font-medium ${
-                          isSelected ? "text-primary" : "text-gray-700"
-                        }`}
-                      >
-                        {friend.name}
-                      </span>
-                    </div>
-                    <div className="text-sm text-gray-500 mt-1">
-                      알러지: {translateAllergy(friend.allergies)}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="sticky bottom-0 bg-white/80 backdrop-blur-md px-6 py-4 space-y-3 border-t border-gray-100">
-          <Link href="/find" className="block">
-            <Button
-              variant="primary"
-              size="lg"
-              className="w-full shadow-md hover:shadow-lg transition-shadow"
+        {/* Status Buttons */}
+        <div className="flex items-center gap-2">
+          {!editing ? (
+            <button
+              onClick={() => setEditing(true)}
+              className="w-20 h-[24px] mt-1 border border-secondary DEFAULT text-secondary DEFAULT rounded-full text-caption flex items-center justify-center transition-transform duration-300"
             >
-              친구찾기
-            </Button>
-          </Link>
-          <Button
-            variant="outline-primary"
-            size="lg"
-            className="w-full"
-            onClick={Recommendation}
-            disabled={selectedFriendIds.length === 0}
-          >
-            {selectedFriendIds.length > 0 ? "추천받기" : "친구를 선택해주세요"}
-          </Button>
+              {status === "NOT_VISITED" && "미방문"}
+              {status === "LIKE" && "좋아요"}
+              {status === "DISLIKE" && "싫어요"}
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleUpdateStatus("NOT_VISITED")}
+                className={`w-20 h-[24px] mt-1 rounded-full text-caption flex items-center justify-center ${
+                  status === "NOT_VISITED"
+                    ? "bg-primary DEFAULT text-white"
+                    : "border border-primary DEFAULT text-primary DEFAULT"
+                }`}
+              >
+                미방문
+              </button>
+              <button
+                onClick={() => handleUpdateStatus("LIKE")}
+                className={`w-20 h-[24px] mt-1 rounded-full text-caption flex items-center justify-center ${
+                  status === "LIKE"
+                    ? "bg-primary DEFAULT text-white"
+                    : "border border-primary DEFAULT text-primary DEFAULT"
+                }`}
+              >
+                좋아요
+              </button>
+              <button
+                onClick={() => handleUpdateStatus("DISLIKE")}
+                className={`w-20 h-[24px] mt-1 rounded-full text-caption flex items-center justify-center ${
+                  status === "DISLIKE"
+                    ? "bg-primary DEFAULT text-white"
+                    : "border border-primary DEFAULT text-primary DEFAULT"
+                }`}
+              >
+                싫어요
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }
