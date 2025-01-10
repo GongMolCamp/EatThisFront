@@ -75,7 +75,7 @@ export default function MainPage() {
         `}
       >
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100 animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="flex flex-col">
               {/* 프로필 정보 */}
               <div className="flex items-center gap-4">
@@ -118,7 +118,11 @@ export default function MainPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* 혼자 먹기 카드 */}
-        <div className="group relative bg-gradient-to-br from-orange-50 to-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-orange-100/50">
+        <div
+          className="group relative bg-gradient-to-br from-orange-50 to-white rounded-3xl 
+            shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-orange-100/50
+            animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-forwards"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex flex-col items-center relative">
             <h2 className="text-2xl font-bold mb-6 text-gray-800 group-hover:text-primary transition-colors">
@@ -143,7 +147,11 @@ export default function MainPage() {
         </div>
 
         {/* 같이 먹기 카드 */}
-        <div className="group relative bg-gradient-to-br from-blue-50 to-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-blue-100/50">
+        <div
+          className="group relative bg-gradient-to-br from-blue-50 to-white rounded-3xl 
+            shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-blue-100/50
+            animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-forwards"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex flex-col items-center relative">
             <h2 className="text-2xl font-bold mb-6 text-gray-800 group-hover:text-primary transition-colors">

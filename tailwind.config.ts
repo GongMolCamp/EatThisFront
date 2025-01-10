@@ -41,9 +41,23 @@ const config: Config = {
         body: ["16px", { lineHeight: "1.4", fontWeight: "400" }], // 본문
         caption: ["14px", { lineHeight: "1.4", fontWeight: "400" }], // 보조 텍스트
       },
+      animation: {
+        "fade-in": "fade-in 0.5s ease-out",
+        "slide-in": "slide-in 0.5s ease-out",
+      },
+      keyframes: {
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "slide-in": {
+          "0%": { transform: "translateY(20px)" },
+          "100%": { transform: "translateY(0)" },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
 
 export default config;

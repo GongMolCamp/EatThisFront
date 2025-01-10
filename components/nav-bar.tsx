@@ -31,8 +31,8 @@ export function NavBar() {
   return (
     <nav
       className={`
-        fixed top-0 left-0 right-0 h-16 bg-white z-50
-        transition-transform duration-300 ease-in-out
+        fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md z-50
+        transition-transform duration-300 ease-in-out border-b border-gray-100
         ${isVisible ? "translate-y-0" : "-translate-y-full"}
       `}
     >
@@ -41,9 +41,9 @@ export function NavBar() {
           {needsBackButton && (
             <button
               onClick={() => router.push("/main")}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-50 rounded-full transition-colors"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <ArrowLeft className="w-6 h-6 text-gray-700" />
             </button>
           )}
         </div>
@@ -53,9 +53,10 @@ export function NavBar() {
             alt="메인 로고"
             width={40}
             height={40}
+            className="drop-shadow-sm"
           />
         </div>
-        <div className="w-10" /> {/* 좌우 균형을 위한 빈 공간 */}
+        <div className="w-10" />
       </div>
     </nav>
   );

@@ -32,8 +32,8 @@ const translateAllergy = (allergies: string[]): string => {
     return "없음";
   }
   return allergies
-      .map((allergy) => allergyTranslation[allergy] || allergy)
-      .join(", ");
+    .map((allergy) => allergyTranslation[allergy] || allergy)
+    .join(", ");
 };
 
 export default function SocialPage() {
@@ -57,14 +57,14 @@ export default function SocialPage() {
 
       try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/friends/list?userId=${user.id}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
+          `${process.env.NEXT_PUBLIC_API_URL}/api/friends/list?userId=${user.id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         if (!response.ok) {
           throw new Error("친구 목록을 가져오는 데 실패했습니다.");
@@ -111,66 +111,97 @@ export default function SocialPage() {
 
   if (!user) {
     return (
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-        </div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
   return (
-  <main className="flex flex-col items-center w-full h-screen bg-white">
-    <div className="flex flex-col w-full max-w-[640px] h-full">
-      <div className="sticky top-0 shadow-md bg-white z-10 px-6 pt-8 pb-4">
-        <h1 className="text-title text-gray-dark">소셜</h1>
-        <p className="text-subtitle text-gray-default mt-7">친구목록</p>
-      </div>
+    <main className="flex flex-col items-center w-full h-screen bg-gradient-to-b from-white to-orange-50/30">
+      <div className="flex flex-col w-full max-w-[640px] h-full">
+        <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-6 pt-8 pb-4">
+          <h1 className="text-2xl font-bold text-gray-800">소셜</h1>
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-lg font-medium text-gray-600">친구목록</p>
+            <p className="text-sm text-gray-500">
+              {selectedFriendIds.length}명 선택됨
+            </p>
+          </div>
+        </div>
 
-
-      <div className="flex-1 overflow-y-auto px-6 pb-4">
-        <div className="w-full space-y-6 mt-6">
-          {friends.map((friend) => {
-            const isSelected = selectedFriendIds.includes(friend.id);
-            const borderColorClass = isSelected
-                ? "border-[#4A90E2]"
-                : "border-[#FFA726]";
-
-            return (
+        <div className="flex-1 overflow-y-auto px-6 pb-4">
+          <div className="w-full space-y-4 mt-4">
+            {friends.map((friend) => {
+              const isSelected = selectedFriendIds.includes(friend.id);
+              return (
                 <button
-                    key={friend.id}
-                    onClick={() => handleFriendClick(friend.id)}
-                    className={`w-full flex items-center p-3 rounded-2xl border-2 shadow-md text-sm text-gray-dark hover:border-[#F57C00] ${borderColorClass}`}
+                  key={friend.id}
+                  onClick={() => handleFriendClick(friend.id)}
+                  className={`
+                  w-full flex items-center p-4 rounded-2xl border-2
+                  ${
+                    isSelected
+                      ? "border-primary bg-primary/5"
+                      : "border-gray-100 hover:border-primary/30"
+                  }
+                  transition-all duration-200 group
+                `}
                 >
-                  <div className="w-12 h-12 bg-gray-300 rounded-full mr-4 flex-shrink-0" />
-                  <div className="text-left">
-                    <div>이름 : {friend.name}</div>
-                    <div>알러지 : {translateAllergy(friend.allergies)}</div>
+                  <div
+                    className={`
+                  w-12 h-12 rounded-full mr-4 flex-shrink-0
+                  bg-gradient-to-br from-primary/20 to-primary/5
+                  flex items-center justify-center
+                  ${isSelected ? "text-primary" : "text-gray-400"}
+                `}
+                  >
+                    <span className="text-lg font-medium">
+                      {friend.name[0]}
+                    </span>
+                  </div>
+
+                  <div className="text-left flex-1">
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`font-medium ${
+                          isSelected ? "text-primary" : "text-gray-700"
+                        }`}
+                      >
+                        {friend.name}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-500 mt-1">
+                      알러지: {translateAllergy(friend.allergies)}
+                    </div>
                   </div>
                 </button>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/*
-          하단 버튼 영역
-          (모바일 기준에서 항상 아래쪽에 위치)
-        */}
-      <div className="flex flex-col gap-4 px-6 pb-8">
-        <Link href="/find" className="w-full">
-          <Button variant="primary" size="lg" className="w-full">
-            친구찾기
-          </Button>
-        </Link>
-        <Button
+        <div className="sticky bottom-0 bg-white/80 backdrop-blur-md px-6 py-4 space-y-3 border-t border-gray-100">
+          <Link href="/find" className="block">
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full shadow-md hover:shadow-lg transition-shadow"
+            >
+              친구찾기
+            </Button>
+          </Link>
+          <Button
             variant="outline-primary"
             size="lg"
             className="w-full"
             onClick={Recommendation}
-        >
-          추천받기
-        </Button>
+            disabled={selectedFriendIds.length === 0}
+          >
+            {selectedFriendIds.length > 0 ? "추천받기" : "친구를 선택해주세요"}
+          </Button>
+        </div>
       </div>
-    </div>
-  </main>
-);
+    </main>
+  );
 }
