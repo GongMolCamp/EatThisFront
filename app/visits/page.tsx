@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
+import { NavBar } from "@/components/nav-bar";
 
 interface Visit {
   id: string;
@@ -9,6 +10,8 @@ interface Visit {
   restaurantName: string;
   visitStatus: "NOT_VISITED" | "LIKE" | "DISLIKE";
   createdAt: string;
+  mapUrl: string;
+  imageUrl: string;
 }
 
 export default function VisitsPage() {
@@ -31,23 +34,23 @@ export default function VisitsPage() {
     fetchVisits();
   }, []);
 
-  if (loading) {
-    return <div>로딩 중...</div>;
-  }
+  if (loading) return <div>로딩 중...</div>;
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (error) return <div>{error}</div>;
 
   return (
-    <main className="flex flex-col items-center bg-white p-4">
-      <h1 className="text-2xl font-bold mb-4">방문 기록</h1>
-      <div className="w-full max-w-xl">
-        {visits.map((visit) => (
-          <VisitItem key={visit.id} visit={visit} />
-        ))}
-      </div>
-    </main>
+    <>
+      <NavBar />
+
+      <main className="flex flex-col items-start bg-white p-4">
+        <h1 className="text-title font-sans text-grey-dark">방문 기록</h1>
+        <div className="w-full max-w-xl">
+          {visits.map((visit) => (
+            <VisitItem key={visit.id} visit={visit} />
+          ))}
+        </div>
+      </main>
+    </>
   );
 }
 
@@ -70,59 +73,81 @@ function VisitItem({ visit }: { visit: Visit }) {
   };
 
   return (
-    <div className="flex items-center gap-4 border-b border-gray-300 p-4">
-      {/* Place Info */}
-      <div className="flex flex-col flex-1">
-        <h3 className="text-lg font-bold">{visit.restaurantName}</h3>
-        <p className="text-gray-500 text-sm">
-          {new Date(visit.createdAt).toLocaleString()}
-        </p>
-      </div>
-
-      {/* Status Buttons */}
-      {!editing ? (
-        <button
-          onClick={() => setEditing(true)}
-          className="border border-[#4A90E2] text-[#4A90E2] px-4 py-2 rounded-md"
-        >
-          {status === "NOT_VISITED" && "미방문"}
-          {status === "LIKE" && "좋아요"}
-          {status === "DISLIKE" && "싫어요"}
-        </button>
+    <div className="flex items-center w-full h-32 border-b border-gray DEFAULT">
+      {/* Restaurant Image */}
+      {visit.imageUrl ? (
+        <img
+          src={visit.imageUrl}
+          alt={visit.restaurantName}
+          className="w-20 h-20 rounded-lg object-cover border border-secondary-light"
+        />
       ) : (
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleUpdateStatus("NOT_VISITED")}
-            className={`px-4 py-2 rounded-md ${
-              status === "NOT_VISITED"
-                ? "bg-[#FFA726] text-white"
-                : "border border-[#FFA726] text-[#FFA726]"
-            }`}
-          >
-            미방문
-          </button>
-          <button
-            onClick={() => handleUpdateStatus("LIKE")}
-            className={`px-4 py-2 rounded-md ${
-              status === "LIKE"
-                ? "bg-[#FFA726] text-white"
-                : "border border-[#FFA726] text-[#FFA726]"
-            }`}
-          >
-            좋아요
-          </button>
-          <button
-            onClick={() => handleUpdateStatus("DISLIKE")}
-            className={`px-4 py-2 rounded-md ${
-              status === "DISLIKE"
-                ? "bg-[#FFA726] text-white"
-                : "border border-[#FFA726] text-[#FFA726]"
-            }`}
-          >
-            싫어요
-          </button>
+        <div className="w-20 h-20 rounded-lg bg-gray-lightest flex items-center justify-center text-gray text-caption border border-secondary-light">
+          사진 없음
         </div>
       )}
+
+      {/* Restaurant Info */}
+      <div className="ml-4 flex flex-col justify-between h-20">
+        <a
+          href={visit.mapUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-title font-medium text-gray-dark hover:underline"
+        >
+          {visit.restaurantName}
+        </a>
+        <p className="text-caption text-gray DEFAULT">
+          {new Date(visit.createdAt).toLocaleString()}
+        </p>
+
+        {/* Status Buttons */}
+        <div className="flex items-center gap-2">
+          {!editing ? (
+            <button
+              onClick={() => setEditing(true)}
+              className="w-20 h-[24px] mt-1 border border-secondary DEFAULT text-secondary DEFAULT rounded-full text-caption flex items-center justify-center transition-transform duration-300"
+            >
+              {status === "NOT_VISITED" && "미방문"}
+              {status === "LIKE" && "좋아요"}
+              {status === "DISLIKE" && "싫어요"}
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleUpdateStatus("NOT_VISITED")}
+                className={`w-20 h-[24px] mt-1 rounded-full text-caption flex items-center justify-center ${
+                  status === "NOT_VISITED"
+                    ? "bg-primary DEFAULT text-white"
+                    : "border border-primary DEFAULT text-primary DEFAULT"
+                }`}
+              >
+                미방문
+              </button>
+              <button
+                onClick={() => handleUpdateStatus("LIKE")}
+                className={`w-20 h-[24px] mt-1 rounded-full text-caption flex items-center justify-center ${
+                  status === "LIKE"
+                    ? "bg-primary DEFAULT text-white"
+                    : "border border-primary DEFAULT text-primary DEFAULT"
+                }`}
+              >
+                좋아요
+              </button>
+              <button
+                onClick={() => handleUpdateStatus("DISLIKE")}
+                className={`w-20 h-[24px] mt-1 rounded-full text-caption flex items-center justify-center ${
+                  status === "DISLIKE"
+                    ? "bg-primary DEFAULT text-white"
+                    : "border border-primary DEFAULT text-primary DEFAULT"
+                }`}
+              >
+                싫어요
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
