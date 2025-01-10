@@ -41,12 +41,19 @@ export default function VisitsPage() {
   return (
     <>
       <NavBar />
-
-      <main className="flex flex-col items-start bg-white p-4">
-        <h1 className="text-title font-sans text-grey-dark">방문 기록</h1>
-        <div className="w-full max-w-xl">
-          {visits.map((visit) => (
-            <VisitItem key={visit.id} visit={visit} />
+      <main className="flex flex-col items-start bg-white p-4 pt-20">
+        <h1 className="text-title font-sans text-grey-dark mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
+          방문 기록
+        </h1>
+        <div className="w-full max-w-xl space-y-4">
+          {visits.map((visit, index) => (
+            <div
+              key={visit.id}
+              className="animate-in fade-in slide-in-from-bottom-4 duration-700"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <VisitItem visit={visit} />
+            </div>
           ))}
         </div>
       </main>
@@ -73,7 +80,7 @@ function VisitItem({ visit }: { visit: Visit }) {
   };
 
   return (
-    <div className="flex items-center w-full h-32 border-b border-gray DEFAULT">
+    <div className="flex items-center w-full h-32 border-b border-gray-100/80 hover:border-primary/20 transition-colors">
       {/* Restaurant Image */}
       {visit.imageUrl ? (
         <img

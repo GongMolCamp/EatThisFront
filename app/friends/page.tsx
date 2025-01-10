@@ -120,7 +120,7 @@ export default function SocialPage() {
   return (
     <main className="flex flex-col items-center w-full h-screen bg-gradient-to-b from-white to-orange-50/30">
       <div className="flex flex-col w-full max-w-[640px] h-full">
-        <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-6 pt-8 pb-4">
+        <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-6 pt-8 pb-4 animate-in fade-in slide-in-from-top-4 duration-500">
           <h1 className="text-2xl font-bold text-gray-800">소셜</h1>
           <div className="flex items-center justify-between mt-6">
             <p className="text-lg font-medium text-gray-600">친구목록</p>
@@ -132,7 +132,7 @@ export default function SocialPage() {
 
         <div className="flex-1 overflow-y-auto px-6 pb-4">
           <div className="w-full space-y-4 mt-4">
-            {friends.map((friend) => {
+            {friends.map((friend, index) => {
               const isSelected = selectedFriendIds.includes(friend.id);
               return (
                 <button
@@ -146,7 +146,9 @@ export default function SocialPage() {
                       : "border-gray-100 hover:border-primary/30"
                   }
                   transition-all duration-200 group
+                  animate-in fade-in slide-in-from-bottom-4
                 `}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div
                     className={`
@@ -181,7 +183,7 @@ export default function SocialPage() {
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-white/80 backdrop-blur-md px-6 py-4 space-y-3 border-t border-gray-100">
+        <div className="sticky bottom-0 bg-white/80 backdrop-blur-md px-6 py-4 space-y-3 border-t border-gray-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <Link href="/find" className="block">
             <Button
               variant="primary"
