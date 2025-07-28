@@ -47,6 +47,7 @@ export default function MainPage() {
         }),
       });
       // AI 응답에서 text 부분만 추출해서 출력
+      console.log("AI 응답: ", response);
       const recommendedFood = response.placeId;
       console.log("AI 추천 식당ID: ", recommendedFood);
 
