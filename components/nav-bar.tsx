@@ -40,7 +40,7 @@ export function NavBar() {
         <div className="w-10">
           {needsBackButton && (
             <button
-              onClick={() => router.push("/main")}
+              onClick={() => router.back()}
               className="p-2 hover:bg-gray-50 rounded-full transition-colors"
             >
               <ArrowLeft className="w-6 h-6 text-gray-700" />
