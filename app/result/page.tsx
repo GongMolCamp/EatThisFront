@@ -30,9 +30,12 @@ export default function ResultPage() {
     const fetchData = async () => {
       if (placeId) {
         try {
-          const response = await fetchWithAuth(`/restaurants/${placeId}`, {
-            method: "GET",
-          });
+          const response = await fetchWithAuth(
+            `/api/data/restaurants/${placeId}`,
+            {
+              method: "GET",
+            }
+          );
           setRestaurantData(response);
         } catch (error) {
           console.error("데이터 로딩 에러:", error);
