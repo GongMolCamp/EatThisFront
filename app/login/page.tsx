@@ -95,12 +95,16 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-white">
-      <div className="w-full max-w-[640px] px-6 py-16">
-        <div className="flex flex-col items-center gap-8">
+    <main className="flex min-h-screen flex-col items-center bg-white relative">
+      <div className="w-full max-w-[640px] px-6 py-16 flex-1 flex flex-col items-center justify-center pb-32">
+        <div className="flex flex-col items-center gap-8 w-full">
           <Logo />
 
-          <form onSubmit={handleSubmit} className="w-full space-y-4">
+          <form
+            id="login-form"
+            onSubmit={handleSubmit}
+            className="w-full space-y-4"
+          >
             {error && (
               <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
                 {error}
@@ -144,23 +148,28 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <div className="flex flex-col w-full gap-4 mt-4">
-              <Button
-                variant="primary"
-                size="lg"
-                className="w-full"
-                type="submit"
-                disabled={isLoading}
-              >
-                {isLoading ? "로그인 중..." : "로그인"}
-              </Button>
-              <Link href="/signup" className="w-full">
-                <Button variant="outline-primary" size="lg" className="w-full">
-                  회원가입
-                </Button>
-              </Link>
-            </div>
           </form>
+        </div>
+      </div>
+
+      {/* 하단 고정 버튼 영역 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-6 pb-8 md:pb-6">
+        <div className="w-full max-w-[640px] mx-auto space-y-4">
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full mb-4"
+            type="submit"
+            form="login-form"
+            disabled={isLoading}
+          >
+            {isLoading ? "로그인 중..." : "로그인"}
+          </Button>
+          <Link href="/signup" className="w-full">
+            <Button variant="outline-primary" size="lg" className="w-full">
+              회원가입
+            </Button>
+          </Link>
         </div>
       </div>
     </main>
