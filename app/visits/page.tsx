@@ -173,7 +173,6 @@ export default function VisitsPage() {
             </div>
           )}
         </div>
-        4
       </main>
 
       <style jsx global>{`
