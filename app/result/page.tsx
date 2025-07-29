@@ -113,20 +113,20 @@ export default function ResultPage() {
               <div className="relative h-72 w-full">
                 <img
                   src={
-                    restaurantData.image_url ||
+                    restaurantData.data.imageUrl ||
                     "https://via.placeholder.com/800x600"
                   }
-                  alt={restaurantData.name}
+                  alt={restaurantData.data.name}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   <p className="text-white/80 text-sm mb-1">추천 메뉴</p>
                   <h2 className="text-2xl font-bold text-white mb-1">
-                    {restaurantData.name}
+                    {restaurantData.data.name}
                   </h2>
                   <p className="text-white/90 font-medium">
-                    {restaurantData.menu}
+                    {restaurantData.data.menu}
                   </p>
                 </div>
               </div>
