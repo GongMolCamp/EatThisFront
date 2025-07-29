@@ -110,7 +110,7 @@ export default function ResultPage() {
               <div className="relative h-72 w-full">
                 <img
                   src={
-                    restaurantData.image_url ||
+                    restaurantData.imageUrl ||
                     "https://via.placeholder.com/800x600"
                   }
                   alt={restaurantData.name}
@@ -130,7 +130,7 @@ export default function ResultPage() {
 
               <div className="p-5 space-y-3">
                 <a
-                  href={restaurantData.map_url}
+                  href={restaurantData.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block"
