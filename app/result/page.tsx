@@ -13,8 +13,8 @@ interface Restaurant {
   id: number;
   name: string;
   menu: string;
-  map_url: string;
-  image_url: string;
+  mapUrl: string;
+  imageUrl: string;
 }
 
 export default function ResultPage() {
