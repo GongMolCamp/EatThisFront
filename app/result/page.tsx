@@ -24,6 +24,7 @@ export default function ResultPage() {
   const placeId = encodedPlace ? atob(encodedPlace) : "추천 메뉴 없음";
   const [restaurantData, setRestaurantData] = useState<Restaurant | null>(null);
   const setIsVisible = useScrollStore((state) => state.setIsVisible);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +36,11 @@ export default function ResultPage() {
           setRestaurantData(response);
         } catch (error) {
           console.error("데이터 로딩 에러:", error);
+          setError(
+            error instanceof Error
+              ? error.message
+              : "데이터를 불러올 수 없습니다."
+          );
         }
       }
     };
@@ -49,6 +55,33 @@ export default function ResultPage() {
     setIsVisible(true);
     router.push("/main");
   };
+
+  // 에러 상태 처리
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-orange-50/30 py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto space-y-6">
+            <div className="flex flex-col items-center mb-6">
+              <Logo width={80} height={80} />
+              <h1 className="text-2xl font-bold text-gray-800 mt-4">
+                오류가 발생했습니다
+              </h1>
+              <p className="text-sm text-gray-500 mt-2 text-center">{error}</p>
+            </div>
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full"
+              onClick={handleBackToMain}
+            >
+              다시 추천받기
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!restaurantData) {
     return (

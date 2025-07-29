@@ -19,8 +19,24 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "API request failed");
+    let errorMessage = "API request failed";
+
+    try {
+      // Content-Type이 JSON인지 확인
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const error = await response.json();
+        errorMessage = error.message || errorMessage;
+      } else {
+        // HTML 응답인 경우 (404 페이지 등)
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+    } catch {
+      // JSON 파싱 실패 시 기본 에러 메시지 사용
+      errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+    }
+
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -29,7 +45,10 @@ export async function fetchWithAuth(url: string, options: FetchOptions = {}) {
 export const api = {
   // 리뷰 관련
   reviews: {
-    list: (params?: { userId?: string }) => fetchWithAuth(`/api/reviews${params?.userId ? `?userId=${params.userId}` : ""}`),
+    list: (params?: { userId?: string }) =>
+      fetchWithAuth(
+        `/api/reviews${params?.userId ? `?userId=${params.userId}` : ""}`
+      ),
     get: (id: string) => fetchWithAuth(`/api/reviews/${id}`),
     create: (data: FormData) =>
       fetchWithAuth("/api/reviews", {
@@ -60,7 +79,10 @@ export const api = {
   // 방문 기록 관련
   visits: {
     list: () => fetchWithAuth("/api/visits"),
-    updateStatus: async (placeId: string | number, body: { visitStatus: string }) => {
+    updateStatus: async (
+      placeId: string | number,
+      body: { visitStatus: string }
+    ) => {
       console.log("API Call to:", `/api/visits/${placeId}`); // ✅ 추가
       console.log("Request Body:", body); // ✅ 추가
 
