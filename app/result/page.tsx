@@ -30,13 +30,10 @@ export default function ResultPage() {
     const fetchData = async () => {
       if (placeId) {
         try {
-          const response = await fetchWithAuth(
-            `/api/data/restaurants/${placeId}`,
-            {
-              method: "GET",
-            }
-          );
-          setRestaurantData(response);
+          const response = await fetchWithAuth(`/api/restaurants/${placeId}`, {
+            method: "GET",
+          });
+          setRestaurantData(response.data);
         } catch (error) {
           console.error("데이터 로딩 에러:", error);
           setError(
@@ -113,20 +110,20 @@ export default function ResultPage() {
               <div className="relative h-72 w-full">
                 <img
                   src={
-                    restaurantData.data.imageUrl ||
+                    restaurantData.image_url ||
                     "https://via.placeholder.com/800x600"
                   }
-                  alt={restaurantData.data.name}
+                  alt={restaurantData.name}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   <p className="text-white/80 text-sm mb-1">추천 메뉴</p>
                   <h2 className="text-2xl font-bold text-white mb-1">
-                    {restaurantData.data.name}
+                    {restaurantData.name}
                   </h2>
                   <p className="text-white/90 font-medium">
-                    {restaurantData.data.menu}
+                    {restaurantData.menu}
                   </p>
                 </div>
               </div>
