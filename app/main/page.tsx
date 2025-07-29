@@ -5,17 +5,18 @@ import Lottie from "lottie-react";
 import cookingAnimation from "@/public/lottie/cookingLottie.json";
 import desertAnimation from "@/public/lottie/desertLottie.json";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useScrollStore } from "@/store/use-scroll-store";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/api";
-import { History } from "lucide-react";
+import { History, Loader2 } from "lucide-react";
 
 export default function MainPage() {
   const { user } = useAuth();
   const setIsVisible = useScrollStore((state) => state.setIsVisible);
   const isVisible = useScrollStore((state) => state.isVisible);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -39,6 +40,7 @@ export default function MainPage() {
   }, [setIsVisible]); // lastScrollY를 의존성 배열에서 제거
 
   const handleSoloEat = async () => {
+    setIsLoading(true);
     try {
       const response = await fetchWithAuth("/api/ai/generate", {
         method: "POST",
@@ -54,6 +56,8 @@ export default function MainPage() {
       router.push(`/result?food=${btoa(recommendedFood)}`);
     } catch (error) {
       console.error("AI 추천 에러:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -66,7 +70,7 @@ export default function MainPage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="relative container mx-auto px-4 py-8">
       {/* 프로필 카드 */}
       <div
         className={`
@@ -119,16 +123,16 @@ export default function MainPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* 혼자 먹기 카드 */}
-        <div
-          className="group relative bg-gradient-to-br from-orange-50 to-white rounded-3xl 
-            shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-orange-100/50
-            animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-forwards"
-        >
+        <div className="group relative bg-gradient-to-br from-orange-50 to-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-orange-100/50 animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-forwards">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex flex-col items-center relative">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800 group-hover:text-primary transition-colors">
+            <h2 className="text-2xl font-bold mb-3 text-gray-800 group-hover:text-primary transition-colors">
               혼자 먹기
             </h2>
+            <p className="text-gray-600 text-sm text-center mb-6 leading-relaxed">
+              AI가 당신의 취향을 분석해서
+              <br />딱 맞는 맛집을 추천해드려요
+            </p>
             <div className="w-64 h-64 mb-8">
               <Lottie
                 animationData={cookingAnimation}
@@ -139,25 +143,34 @@ export default function MainPage() {
             <Button
               variant="primary"
               size="lg"
-              className="w-full max-w-xs transform group-hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="w-full max-w-xs transform group-hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
               onClick={handleSoloEat}
+              disabled={isLoading}
             >
-              시작하기
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  AI가 추천하는 중...
+                </span>
+              ) : (
+                "시작하기"
+              )}
             </Button>
           </div>
         </div>
 
         {/* 같이 먹기 카드 */}
-        <div
-          className="group relative bg-gradient-to-br from-blue-50 to-white rounded-3xl 
-            shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-blue-100/50
-            animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-forwards"
-        >
+        <div className="group relative bg-gradient-to-br from-blue-50 to-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 p-8 border border-blue-100/50 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-forwards">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="flex flex-col items-center relative">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800 group-hover:text-primary transition-colors">
+            <h2 className="text-2xl font-bold mb-3 text-gray-800 group-hover:text-primary transition-colors">
               같이 먹기
             </h2>
+            <p className="text-gray-600 text-sm text-center mb-6 leading-relaxed">
+              친구들과 함께 맛집을 공유하고
+              <br />
+              맛있는 추억을 만들어보세요
+            </p>
             <div className="w-64 h-64 mb-8">
               <Lottie
                 animationData={desertAnimation}
